@@ -18,3 +18,7 @@ export const fetchQuizzes = async (): Promise<Quiz[]> => {
     throw new Error("Không thể lấy danh sách quiz.");
   }
 };
+
+
+
+

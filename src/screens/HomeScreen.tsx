@@ -10,6 +10,9 @@ import { Quiz } from "../../types/quizz.type";
 import { Subject } from "../../types/subject.type";
 import { LogoutAuth } from "../../api/auth";
 
+import { useDispatch } from "react-redux";
+import { setQuizzId } from "../../redux/quizSlice";
+
 export default function HomeScreen({ navigation }: { navigation: any }) {
   const [email, setEmail] = useState("");
   const [time, setTime] = useState(new Date());
@@ -24,6 +27,12 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 4; // Số bài kiểm tra trên mỗi trang
+
+  const dispatch = useDispatch();
+  const handleSelectQuiz = (id: string) => {
+    dispatch(setQuizzId(id));
+    navigation.navigate("Làm bài kiểm tra");
+  };
 
   useEffect(() => {
     (async () => {
@@ -109,8 +118,13 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
   const totalPages = Math.ceil(filteredQuizzes.length / pageSize);
 
   return (
-    <View style={tw`flex-1 p-5 mt-5`}>
-      <View style={tw`mb-4 relative items-center`}>
+    <View style={tw`flex-1 p-5 mt-5 bg-blue-50`}>
+      <View style={tw`mb-4 items-center pt-8`}>
+        <Text style={tw`text-3xl font-bold text-blue-700`}>
+          Hệ thống thi trực tuyến
+        </Text>
+      </View>
+      <View style={tw`mb-4 relative items-center pt-12`}>
         {/* Chọn Môn Học */}
         <DropDownPicker
           open={subjectOpen}
@@ -131,7 +145,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         />
 
         {/* Hiển thị nút Xóa Bộ Lọc chỉ khi có bộ lọc được chọn */}
-        {(selectedSubject || selectedClass) && (
+        {selectedSubject && (
           <TouchableOpacity
             style={tw`bg-gray-300 py-2 px-4 rounded-xl mt-3 flex-row items-center justify-center`}
             onPress={() => {
@@ -151,11 +165,7 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             <TouchableOpacity
               key={item.quizz_id}
               style={tw`bg-white border border-gray-200 p-5 rounded-xl shadow-md mb-2 justify-between`}
-              onPress={() =>
-                navigation.navigate("Làm bài kiểm tra", {
-                  quizId: item.quizz_id,
-                })
-              }
+              onPress={() => handleSelectQuiz(item.quizz_id)}
             >
               <View>
                 <Text style={tw`text-xl font-semibold text-gray-800`}>
@@ -184,23 +194,10 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
         ) : null}
       </ScrollView>
 
-      {/* Đăng xuất */}
-      <TouchableOpacity
-        style={tw`bg-white py-3 px-3 mb-24 rounded-xl self-center mt-5 shadow-lg`}
-        onPress={handleLogout}
-      >
-        <TouchableOpacity onPress={handleLogout}>
-          <Icon name="log-out" size={28} color="#000000" />
-        </TouchableOpacity>
-      </TouchableOpacity>
-
       {/* Thanh điều hướng với phân trang */}
       <View
-        style={tw`absolute bottom-0 left-0 right-0 bg-white py-5 flex-row justify-around border-t border-gray-300 items-center`}
+        style={tw`flex-row justify-between mt-4 p-4 bg-white rounded-xl shadow-md`}
       >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-undo" size={32} color="#4A4A4A" />
-        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -223,11 +220,16 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             color={currentPage === totalPages ? "#A0A0A0" : "#2563EB"}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Hồ sơ người dùng")}
+        >
           <Icon name="person" size={32} color="#4A4A4A" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
-          <Icon name="settings" size={32} color="#4A4A4A" />
+        {/* Đăng xuất */}
+        <TouchableOpacity onPress={handleLogout}>
+          <TouchableOpacity onPress={handleLogout}>
+            <Icon name="log-out" size={32} color="#000000" />
+          </TouchableOpacity>
         </TouchableOpacity>
       </View>
     </View>

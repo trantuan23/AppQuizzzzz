@@ -12,6 +12,8 @@ export interface Quiz {
   answer: any
   created_at: Date;
   updated_at: Date;
+  questions: any,
+  result_id: string
 
 
 }
